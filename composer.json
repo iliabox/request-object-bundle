@@ -1,0 +1,48 @@
+{
+  "name": "mcc-api-tools/request-object-bundle",
+  "version": "0.1.0",
+  "description": "Simple RequestObject",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "type": "symfony-bundle",
+  "authors": [
+    {
+      "name": "Elias Bulychov",
+      "email": "iliabulychov+git@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.4",
+    "ext-json": "*",
+    "symfony/config": "^4.0|^5.0",
+    "symfony/dependency-injection": "^4.0|^5.0",
+    "symfony/http-foundation": "^4.0|^5.0",
+    "symfony/http-kernel":  "^4.0|^5.0",
+    "symfony/serializer":  "^4.0|^5.0",
+    "symfony/validator":  "^4.0|^5.0"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-master"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "autoload": {
+    "psr-4": {
+      "MccApiTools\\RequestObjectBundle\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "MccApiTools\\RequestObjectBundle\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test" : "./vendor/bin/simple-phpunit"
+  },
+  "extra": {
+    "symfony": {
+      "allow-contrib": false
+    }
+  }
+}
