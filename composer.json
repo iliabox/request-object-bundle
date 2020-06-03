@@ -1,6 +1,5 @@
 {
   "name": "mcc-api-tools/request-object-bundle",
-  "version": "0.1.0",
   "description": "Simple RequestObject",
   "minimum-stability": "stable",
   "license": "MIT",
