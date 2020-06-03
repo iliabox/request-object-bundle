@@ -4,7 +4,7 @@ namespace MccApiTools\RequestObjectBundle\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class QueryList implements RequestableInterface
+class QueryList implements QueryObjectInterface
 {
     /**
      * @var string

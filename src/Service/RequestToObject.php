@@ -2,7 +2,10 @@
 
 namespace MccApiTools\RequestObjectBundle\Service;
 
+use MccApiTools\RequestObjectBundle\Model\QueryObjectInterface;
 use MccApiTools\RequestObjectBundle\Model\RequestableInterface;
+use MccApiTools\RequestObjectBundle\Model\RequestObjectInterface;
+use MccApiTools\RequestObjectBundle\Utils\HttpRequestParser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -27,46 +30,37 @@ class RequestToObject
      */
     public function createObject(Request $request, string $class): RequestableInterface
     {
-        $data = self::dataByRequest($request);
-
         try {
-            /* @var $object RequestableInterface */
-            $object = $this->serializer->denormalize($data, $class, null, ['allow_extra_attributes' => false]);
+            $data = self::dataByRequest($request, $class);
+
+            return $this->serializer->denormalize($data, $class, null, ['allow_extra_attributes' => false]);
         } catch (ExceptionInterface $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
-
-        return $object;
     }
 
     /**
      * @param Request $request
+     * @param string $class
      * @return array
      * @throws \JsonException
      */
-    private static function dataByRequest(Request $request): array
+    private static function dataByRequest(Request $request, string $class): array
     {
-        switch ($request->getMethod()) {
-            case 'GET':
-                $query = [];
-                foreach ($request->query->getIterator() as $key => $value) {
-                    $query[str_replace('-', '_', $key)] = $value;
-                }
-
-                return $query;
-            case 'POST':
-            case 'PATCH':
-            case 'PUT':
-                return json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-            default:
-                throw new MethodNotAllowedHttpException(['GET', 'POST', 'PATCH', 'PUT'], sprintf("Method %s not supported.", $request->getMethod()));
+        if (is_subclass_of($class, QueryObjectInterface::class)) {
+            return HttpRequestParser::dataQuery($request);
         }
-    }
 
-    public static function keysByRequest(Request $request): array
-    {
-        $data = self::dataByRequest($request);
+        if (is_subclass_of($class, RequestObjectInterface::class)) {
+            return HttpRequestParser::dataRequest($request);
+        }
 
-        return array_keys($data);
+        if (is_subclass_of($class, RequestableInterface::class)) {
+            return $request->getMethod() === Request::METHOD_GET
+                ? HttpRequestParser::dataQuery($request)
+                : HttpRequestParser::dataRequest($request);
+        }
+
+        throw new \InvalidArgumentException(sprintf('Unknown class "%s".', $class));
     }
 }
