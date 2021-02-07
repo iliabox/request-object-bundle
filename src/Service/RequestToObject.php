@@ -2,6 +2,7 @@
 
 namespace MccApiTools\RequestObjectBundle\Service;
 
+use MccApiTools\RequestObjectBundle\Model\AllowExtraAttributesInterface;
 use MccApiTools\RequestObjectBundle\Model\QueryObjectInterface;
 use MccApiTools\RequestObjectBundle\Model\RequestableInterface;
 use MccApiTools\RequestObjectBundle\Model\RequestObjectInterface;
@@ -32,8 +33,9 @@ class RequestToObject
     {
         try {
             $data = self::dataByRequest($request, $class);
+            $isExtra = $this->isAllowExtraAttributes($class);
 
-            return $this->serializer->denormalize($data, $class, null, ['allow_extra_attributes' => false]);
+            return $this->serializer->denormalize($data, $class, null, ['allow_extra_attributes' => $isExtra]);
         } catch (ExceptionInterface $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
@@ -62,5 +64,15 @@ class RequestToObject
         }
 
         throw new \InvalidArgumentException(sprintf('Unknown class "%s".', $class));
+    }
+
+    private function isAllowExtraAttributes(string $class): bool
+    {
+        switch (true) {
+            case is_subclass_of($class, AllowExtraAttributesInterface::class):
+                return true;
+            default:
+                return false;
+        }
     }
 }
