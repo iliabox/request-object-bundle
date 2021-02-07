@@ -33,7 +33,6 @@ class RequestToObjectTest extends TestCase
 
     /**
      * @dataProvider goodContentProvider
-     * @covers
      */
     public function testCreateObject(array $content)
     {
@@ -48,7 +47,6 @@ class RequestToObjectTest extends TestCase
 
     /**
      * @dataProvider badContentProvider
-     * @covers
      */
     public function testFailedCreateObject(array $content)
     {

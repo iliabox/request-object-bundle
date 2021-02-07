@@ -32,7 +32,6 @@ class RequestToObjectExtraFieldsTest extends TestCase
 
     /**
      * @dataProvider contentProvider
-     * @covers
      */
     public function testCreateObject(array $content)
     {
