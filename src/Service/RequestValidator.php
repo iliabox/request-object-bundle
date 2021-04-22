@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MccApiTools\RequestObjectBundle\Service;
 
+use MccApiTools\RequestObjectBundle\Model\Collection;
 use MccApiTools\RequestObjectBundle\Model\RequestableInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RequestValidator
 {
@@ -19,7 +22,9 @@ class RequestValidator
 
     public function errors(RequestableInterface $dto): array
     {
-        $violations = $this->validator->validate($dto);
+        $object = is_subclass_of($dto, Collection::class) ? $dto->items : $dto;
+
+        $violations = $this->validator->validate($object);
 
         return self::createErrorsByViolations($violations);
     }

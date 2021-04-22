@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MccApiTools\RequestObjectBundle\Service;
 
 use MccApiTools\RequestObjectBundle\Model\AllowExtraAttributesInterface;
+use MccApiTools\RequestObjectBundle\Model\Collection;
 use MccApiTools\RequestObjectBundle\Model\QueryObjectInterface;
 use MccApiTools\RequestObjectBundle\Model\RequestableInterface;
 use MccApiTools\RequestObjectBundle\Model\RequestObjectInterface;
@@ -35,10 +38,30 @@ class RequestToObject
             $data = self::dataByRequest($request, $class);
             $isExtra = $this->isAllowExtraAttributes($class);
 
-            return $this->serializer->denormalize($data, $class, null, ['allow_extra_attributes' => $isExtra]);
+            $className = is_subclass_of($class, Collection::class) ? $class::getItemClass().'[]' : $class;
+
+            $raw = $this->serializer->denormalize($data, $className, null, ['allow_extra_attributes' => $isExtra]);
         } catch (ExceptionInterface $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
+
+        if (false === is_subclass_of($class, Collection::class)) {
+            return $raw;
+        }
+
+        if (false === is_array($raw) && null !== $raw) {
+            throw new BadRequestHttpException('Invalid data');
+        }
+
+        if (empty($raw)) {
+            return $class::create([]);
+        }
+
+        if (empty($raw[0]) || false === ($raw[0] instanceof RequestableInterface)) {
+            throw new BadRequestHttpException('Invalid collection');
+        }
+
+        return $class::create($raw);
     }
 
     /**
