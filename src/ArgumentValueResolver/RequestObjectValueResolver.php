@@ -2,7 +2,7 @@
 
 namespace MccApiTools\RequestObjectBundle\ArgumentValueResolver;
 
-use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
+use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,7 +10,7 @@ use MccApiTools\RequestObjectBundle\Service\RequestToObject;
 use MccApiTools\RequestObjectBundle\Service\RequestValidator;
 use MccApiTools\RequestObjectBundle\Model\RequestableInterface;
 
-class RequestObjectValueResolver implements ArgumentValueResolverInterface
+class RequestObjectValueResolver implements ValueResolverInterface
 {
     /**
      * @var RequestToObject
@@ -28,8 +28,12 @@ class RequestObjectValueResolver implements ArgumentValueResolverInterface
         $this->requestValidator = $requestValidator;
     }
 
-    public function resolve(Request $request, ArgumentMetadata $argument): \Generator
+    public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
+        if (false === $this->supports($argument)) {
+            return [];
+        }
+
         $classname = $argument->getType();
 
         $object = $this->requestDenormalizer->createObject($request, $classname);
@@ -39,10 +43,10 @@ class RequestObjectValueResolver implements ArgumentValueResolverInterface
             throw new BadRequestHttpException(json_encode($errors));
         }
 
-        yield $object;
+        return [$object];
     }
 
-    public function supports(Request $request, ArgumentMetadata $argument): bool
+    private function supports(ArgumentMetadata $argument): bool
     {
         return is_subclass_of($argument->getType(), RequestableInterface::class);
     }
