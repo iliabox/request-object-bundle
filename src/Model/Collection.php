@@ -10,6 +10,10 @@ abstract class Collection implements RequestableInterface
 
     abstract public static function getItemClass(): string;
 
+    final private function __construct()
+    {
+    }
+
     public static function create(array $items): self
     {
         $me = new static();

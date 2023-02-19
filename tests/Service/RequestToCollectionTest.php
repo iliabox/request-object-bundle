@@ -5,12 +5,13 @@ namespace MccApiTools\RequestObjectBundle\Tests\Service;
 use MccApiTools\RequestObjectBundle\Service\RequestToObject;
 use MccApiTools\RequestObjectBundle\Tests\Model\RequestDto1;
 use MccApiTools\RequestObjectBundle\Tests\Model\RequestDto3;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -23,7 +24,7 @@ class RequestToCollectionTest extends TestCase
     {
         parent::setUp();
 
-        $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader());
+        $classMetadataFactory = new ClassMetadataFactory(new AttributeLoader());
 
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer($classMetadataFactory), new ArrayDenormalizer()];
@@ -33,10 +34,8 @@ class RequestToCollectionTest extends TestCase
         $this->service = new RequestToObject($serializer);
     }
 
-    /**
-     * @dataProvider goodContentProvider
-     */
-    public function testCreateObject(array $content)
+    #[DataProvider('goodContentProvider')]
+    public function testCreateObject(array $content): void
     {
         $request = new Request([], [], [], [], [], [], json_encode($content));
 
@@ -48,10 +47,8 @@ class RequestToCollectionTest extends TestCase
         self::assertSame($content[0]['name'], $dto->items[0]->name);
     }
 
-    /**
-     * @dataProvider badContentProvider
-     */
-    public function testFailedCreateObject(array $content, string $pattern)
+    #[DataProvider('badContentProvider')]
+    public function testFailedCreateObject(array $content, string $pattern): void
     {
         $request = new Request([], [], [], [], [], [], json_encode($content));
 
@@ -60,7 +57,7 @@ class RequestToCollectionTest extends TestCase
         $this->service->createObject($request, RequestDto3::class);
     }
 
-    public function goodContentProvider(): \Generator
+    public static function goodContentProvider(): \Generator
     {
         yield [
             [['id' => 10, 'name' => 'test name']],
@@ -75,7 +72,7 @@ class RequestToCollectionTest extends TestCase
         ];
     }
 
-    public function badContentProvider(): \Generator
+    public static function badContentProvider(): \Generator
     {
         yield [
             ['id' => 10, 'name' => 'test name'],

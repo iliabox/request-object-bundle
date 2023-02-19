@@ -1,17 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MccApiTools\RequestObjectBundle\ArgumentValueResolver;
 
 use MccApiTools\RequestObjectBundle\Model\Context;
 use MccApiTools\RequestObjectBundle\Utils\HttpRequestParser;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
+use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
-class RequestContextValueResolver implements ArgumentValueResolverInterface
+class RequestContextValueResolver implements ValueResolverInterface
 {
-    public function resolve(Request $request, ArgumentMetadata $argument): \Generator
+    public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
+        if (false === $this->supports($argument)) {
+            return;
+        }
+
         $object = new Context;
 
         $object->method = $request->getMethod();
@@ -20,7 +26,7 @@ class RequestContextValueResolver implements ArgumentValueResolverInterface
         yield $object;
     }
 
-    public function supports(Request $request, ArgumentMetadata $argument): bool
+    private function supports(ArgumentMetadata $argument): bool
     {
         return is_a($argument->getType(), Context::class, true);
     }
