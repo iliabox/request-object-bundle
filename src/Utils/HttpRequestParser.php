@@ -6,10 +6,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class HttpRequestParser
 {
-    /**
-     * @param Request $request
-     * @return array
-     */
     public static function dataQuery(Request $request): array
     {
         $query = [];
@@ -21,8 +17,6 @@ class HttpRequestParser
     }
 
     /**
-     * @param Request $request
-     * @return array
      * @throws \JsonException
      */
     public static function dataRequest(Request $request): array

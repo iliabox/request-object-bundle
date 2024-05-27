@@ -1,16 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MccApiTools\RequestObjectBundle\Model;
 
 class Context
 {
-    /**
-     * @var string
-     */
     public string $method;
 
-    /**
-     * @var array
-     */
     public array $keys = [];
 }

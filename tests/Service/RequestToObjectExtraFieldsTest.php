@@ -4,11 +4,12 @@ namespace MccApiTools\RequestObjectBundle\Tests\Service;
 
 use MccApiTools\RequestObjectBundle\Service\RequestToObject;
 use MccApiTools\RequestObjectBundle\Tests\Model\RequestDto2;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
@@ -20,7 +21,7 @@ class RequestToObjectExtraFieldsTest extends TestCase
     {
         parent::setUp();
 
-        $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader());
+        $classMetadataFactory = new ClassMetadataFactory(new AttributeLoader());
 
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer($classMetadataFactory)];
@@ -30,10 +31,8 @@ class RequestToObjectExtraFieldsTest extends TestCase
         $this->service = new RequestToObject($serializer);
     }
 
-    /**
-     * @dataProvider contentProvider
-     */
-    public function testCreateObject(array $content)
+    #[DataProvider('contentProvider')]
+    public function testCreateObject(array $content): void
     {
         $request = new Request([], [], [], [], [], [], json_encode($content));
 
@@ -44,7 +43,7 @@ class RequestToObjectExtraFieldsTest extends TestCase
         self::assertSame($content['name'], $dto->name);
     }
 
-    public function contentProvider(): \Generator
+    public static function contentProvider(): \Generator
     {
         yield [
             ['id' => 10, 'name' => 'test name'],

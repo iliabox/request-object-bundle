@@ -7,4 +7,4 @@ services:
 
     MccApiTools\RequestObjectBundle\:
         resource: '../src/*'
-        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Model}'
+        exclude: '../src/{DependencyInjection,Model,Utils}'
