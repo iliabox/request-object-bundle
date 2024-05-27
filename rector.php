@@ -14,7 +14,7 @@ return RectorConfig::configure()
         __DIR__ . '/tests',
     ])
     // uncomment to reach your current PHP version
-    // ->withPhpSets()
+    ->withPhpSets(php81: true)
     ->withRules([
         AddVoidReturnTypeWhereNoReturnRector::class,
     ])

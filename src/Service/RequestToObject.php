@@ -19,11 +19,8 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 class RequestToObject
 {
 
-    private DenormalizerInterface $serializer;
-
-    public function __construct(DenormalizerInterface $serializer)
+    public function __construct(private readonly DenormalizerInterface $serializer)
     {
-        $this->serializer = $serializer;
     }
 
     /**
@@ -91,11 +88,9 @@ class RequestToObject
 
     private function isAllowExtraAttributes(string $class): bool
     {
-        switch (true) {
-            case is_subclass_of($class, AllowExtraAttributesInterface::class):
-                return true;
-            default:
-                return false;
-        }
+        return match (true) {
+            is_subclass_of($class, AllowExtraAttributesInterface::class) => true,
+            default => false,
+        };
     }
 }

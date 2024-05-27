@@ -14,14 +14,9 @@ use MccApiTools\RequestObjectBundle\Model\RequestableInterface;
 
 class RequestObjectValueResolver implements ValueResolverInterface
 {
-    private RequestToObject $requestDenormalizer;
-
-    private RequestValidator $requestValidator;
-
-    public function __construct(RequestToObject $requestDenormalizer, RequestValidator $requestValidator)
+    public function __construct(readonly private RequestToObject  $requestDenormalizer,
+                                readonly private RequestValidator $requestValidator)
     {
-        $this->requestDenormalizer = $requestDenormalizer;
-        $this->requestValidator = $requestValidator;
     }
 
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
