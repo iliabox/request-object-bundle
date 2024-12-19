@@ -107,4 +107,4 @@ If you would like to contribute to this package, please open an issue or submit 
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the [MIT License](LICENSE)
