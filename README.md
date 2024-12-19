@@ -37,9 +37,11 @@ composer require mcc-api-tools/request-object-bundle
 
    namespace App\Request;
 
+   use MccApiTools\RequestObjectBundle\Model\AllowExtraAttributesInterface;
+   use MccApiTools\RequestObjectBundle\Model\RequestObjectInterface;
    use Symfony\Component\Validator\Constraints as Assert;
 
-   class CreateLocationRequest
+   class CreateLocationRequest implements RequestObjectInterface, AllowExtraAttributesInterface
    {
        #[Assert\NotBlank(message: "The location name is required")]
        public string $name;
